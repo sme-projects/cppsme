@@ -80,6 +80,9 @@ void Run::start() {
       e->step();
     }
   }
+  for (SyncProcess* e: procs) {
+    delete e;
+  }
 };
 
 
