@@ -4,6 +4,11 @@ AM_INIT_AUTOMAKE
 
 AC_CONFIG_MACRO_DIRS([m4])
 
+# Enable compiler warnings/errors
+AX_CHECK_COMPILE_FLAG([-Wall], [CXXFLAGS="$CXXFLAGS -Wall"], [], [])
+AX_CHECK_COMPILE_FLAG([-Werror], [CXXFLAGS="$CXXFLAGS -Werror"], [], [])
+AX_CHECK_COMPILE_FLAG([-pedantic], [CXXFLAGS="$CXXFLAGS -pedantic"], [], [])
+
 AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
 
 #INTI_REQUIRED_VERSION=1.0.7

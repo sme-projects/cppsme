@@ -18,7 +18,9 @@ SyncProcess::SyncProcess(const std::string name,
   for(Bus* b : outputs){
     outs.push_back(b);
   }
-};
+}
+
+SyncProcess::~SyncProcess() {}
 
 // void SyncProcess::start() {
 //   run();
@@ -83,7 +85,7 @@ void Run::start() {
   for (SyncProcess* e: procs) {
     delete e;
   }
-};
+}
 
 
 void Bus::step() {

@@ -29,6 +29,7 @@ public:
   SyncProcess(const std::string name, Busses ins, Busses outs);
   //void step();
   virtual void step() = 0;
+  virtual ~SyncProcess();
   vector<Bus*> ins;
   vector<Bus*> outs;
   Bus* get_in(int);
