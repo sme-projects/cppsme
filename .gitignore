@@ -9,5 +9,6 @@ Makefile
 .deps/
 .dirstamp
 /src/cppsme
+callgrind.out*
 *.o
 *~
