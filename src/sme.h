@@ -14,7 +14,6 @@ using std::set;
 class Bus {
 private:
   int _in = 0;
-  int _val = 0;
   int _out = 0;
 public:
   void step();

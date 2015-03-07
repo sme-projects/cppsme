@@ -87,10 +87,8 @@ void Run::start() {
   }
 }
 
-
 void Bus::step() {
-  _out = _val;
-  _val = _in;
+  _out = _in;
 }
 
 int Bus::read(){
