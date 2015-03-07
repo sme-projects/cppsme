@@ -22,10 +22,6 @@ SyncProcess::SyncProcess(const std::string name,
 
 SyncProcess::~SyncProcess() {}
 
-// void SyncProcess::start() {
-//   run();
-// }
-
 Bus* SyncProcess::get_in(int k) {
   return ins[k];
 }
@@ -42,13 +38,6 @@ vector<Bus*> SyncProcess::get_outs() {
   return outs;
 }
 
-//template <class T>
-
-/*Run::Run(std::initializer_list<SyncProcess*> list) {
-  for (SyncProcess* e: list) {
-    add_proc(e);
-  }
-  }*/
 Run::Run(int steps)
   :steps{steps} {}
 
@@ -71,7 +60,6 @@ void Run::add_proc(SyncProcess* p) {
   }
 }
 
-//template <class T>
 void Run::start() {
   int i;
   for(i = 0; i < steps; i++){
@@ -98,16 +86,5 @@ int Bus::read(){
 void Bus::write(int v) {
   _in = v;
 }
-
-
-// void SyncProcess::run() {
-//   std::cout << foo << std::endl;
-// }
-
-/*int main(void){
-  SyncProcess foo = SyncProcess("foo");
-  foo.run();
-  };*/
-
 
 //

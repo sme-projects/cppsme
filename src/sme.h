@@ -40,10 +40,8 @@ protected:
 
 };
 
-//template <class T>
 class Run {
 public:
-  //Run(std::initializer_list<SyncProcess*>);
   Run(int steps);
   void start();
   void add_proc(std::initializer_list<SyncProcess*>);
@@ -53,13 +51,5 @@ private:
   std::set<Bus*> busses;
   int steps;
 };
-
-/*template <class T>
-class SyncManager {
-public:
-  SyncManager(std::initializer_list<T>);
-  int start(int iterations);
-  };*/
-
 
 #endif // CPPSME_SME_H_
