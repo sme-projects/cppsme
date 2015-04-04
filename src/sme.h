@@ -15,13 +15,19 @@ class Bus {
 private:
   int _in = 0;
   int _out = 0;
+  void assign_to(Bus**);
 public:
   void step();
   int read();
   void write(int v);
+  static void assign(std::initializer_list<Bus*>, std::initializer_list<Bus**>);
+  static void assign(std::initializer_list<Bus*>, std::initializer_list<Bus**>,
+		     std::initializer_list<Bus*>, std::initializer_list<Bus**>);
 };
 
 typedef std::initializer_list<Bus*> Busses;
+typedef std::initializer_list<Bus**> BussesPtrPtr;
+
 
 class SyncProcess {
 public:

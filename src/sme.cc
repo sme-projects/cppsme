@@ -85,6 +85,29 @@ int Bus::read(){
 
 void Bus::write(int v) {
   _in = v;
+void Bus::assign_to(Bus** b) {
+  *b = this;
+}
+
+void Bus::assign(Busses from, BussesPtrPtr to) {
+  if (from.size() != to.size()) {
+    std::cout << "Cannot assign busses. to,from not equal length." << std::endl;
+    // TODO: how to handle error?
+  }
+  auto fromit = from.begin();
+  auto toit = to.begin();
+  auto fromit_end = from.end();
+
+  while (fromit != fromit_end) {
+    (*fromit)->assign_to(*toit);
+    fromit++;
+    toit++;
+  }
+}
+
+void Bus::assign(Busses from1, BussesPtrPtr to1, Busses from2, BussesPtrPtr to2) {
+  Bus::assign(from1, to1);
+  Bus::assign(from2, to2);
 }
 
 //
