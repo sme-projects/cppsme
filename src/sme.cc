@@ -5,18 +5,25 @@
 #include <initializer_list>
 #include <vector>
 #include <set>
+#include <map>
 
 #include "sme.h"
 
 SyncProcess::SyncProcess(const std::string name,
-			 std::initializer_list<Bus*> inputs,
-			 std::initializer_list<Bus*> outputs)
+			 Busses inputs,
+			 Busses outputs)
   :name{name} {
   for(Bus* b : inputs){
     ins.push_back(b);
+    if (b->is_named()) {
+      ins_map.insert({b->get_name(), b});
+    }
   }
   for(Bus* b : outputs){
     outs.push_back(b);
+    if (b->is_named()) {
+      outs_map.insert({(b->get_name()), b});
+    }
   }
 }
 
@@ -25,9 +32,16 @@ SyncProcess::~SyncProcess() {}
 Bus* SyncProcess::get_in(int k) {
   return ins[k];
 }
+Bus* SyncProcess::get_in(Name n) {
+  return ins_map[n];
+}
 
 Bus* SyncProcess::get_out(int k) {
   return outs[k];
+}
+
+Bus* SyncProcess::get_out(Name n) {
+  return outs_map[n];
 }
 
 vector<Bus*> SyncProcess::get_ins() {
@@ -75,6 +89,10 @@ void Run::start() {
   }
 }
 
+Bus::Bus() {}
+Bus::Bus(Name name)
+  :name{static_cast<Name>(name)}, named{true} {}
+
 void Bus::step() {
   _out = _in;
 }
@@ -85,6 +103,14 @@ int Bus::read(){
 
 void Bus::write(int v) {
   _in = v;
+Name Bus::get_name() {
+   return name;
+ }
+
+bool Bus::is_named() {
+   return named;
+ }
+
 void Bus::assign_to(Bus** b) {
   *b = this;
 }
