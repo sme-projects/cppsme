@@ -18,11 +18,17 @@ typedef const std::string Name;
 
 class Bus {
 private:
+  int vals[2] = {0,0};
+  static int offseta;
+  static int offsetb;
+
   int _in = 0;
-  int _out = 0;
+  int _out = 1;
   Name name;
   bool named = false;
+
   void assign_to(Bus**);
+
 public:
   Bus();
   Bus(Name);
@@ -34,6 +40,9 @@ public:
   static void assign(std::initializer_list<Bus*>, std::initializer_list<Bus**>);
   static void assign(std::initializer_list<Bus*>, std::initializer_list<Bus**>,
 		     std::initializer_list<Bus*>, std::initializer_list<Bus**>);
+  static void initval();
+  static void swapval();
+
 };
 
 typedef std::initializer_list<Bus*> Busses;
