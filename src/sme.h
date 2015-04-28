@@ -48,38 +48,60 @@ public:
 typedef std::initializer_list<Bus*> Busses;
 typedef std::initializer_list<Bus**> BussesPtrPtr;
 
-
-class SyncProcess {
+// Class to serve as common ancestor of Sync* classes
+class SyncObject {
 public:
-  SyncProcess(const std::string name, Busses ins, Busses outs);
-  //void step();
+  virtual vector<Bus*> get_outs()=0;
+  virtual vector<Bus*> get_ins()=0;
+};
+
+typedef std::initializer_list<SyncObject*> Objects;
+
+class SyncProcess : public SyncObject {
+public:
+  SyncProcess(Name name, Busses ins, Busses outs);
   virtual void step() = 0;
   virtual ~SyncProcess();
   vector<Bus*> ins;
   vector<Bus*> outs;
+
+  // FIXME: Do we need these?
   map<Name, Bus*> ins_map;
   map<Name, Bus*> outs_map;
   Bus* get_in(int);
-  Bus* get_in(Name)
+  Bus* get_in(Name);
   Bus* get_out(int);
   Bus* get_out(Name);
   vector<Bus*> get_outs();
   vector<Bus*> get_ins();
 protected:
     const std::string name;
-
 };
+
+typedef std::initializer_list<SyncObject*> Processes;
+
+class SyncComponent : public SyncObject {
+private:
+  const std::string name;
+public:
+  SyncComponent(Name name, Processes procs, Busses ins, Busses outs);
+  vector<SyncObject*> procs;
+};
+
 
 class Run {
 public:
   Run(int steps);
   void start();
-  void add_proc(std::initializer_list<SyncProcess*>);
-  void add_proc(SyncProcess*);
+  void add_proc(std::initializer_list<SyncObject*>);
+  void add_proc(SyncObject*);
 private:
   std::vector<SyncProcess*> procs;
   std::set<Bus*> busses;
   int steps;
+
+  void append_procs(SyncProcess* p);
+  void append_procs(vector<SyncComponent*> proc);
 };
 
 #endif // CPPSME_SME_H_
