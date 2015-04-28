@@ -75,11 +75,15 @@ void Run::add_proc(SyncProcess* p) {
 }
 
 void Run::start() {
+  //Bus::initval();
+
   int i;
   for(i = 0; i < steps; i++){
+    // TODO: Decide on bus handling implementation
     for (Bus* b: busses){
       b->step();
     }
+    Bus::swapval();
     for (SyncProcess* e:this->procs) {
       e->step();
     }
@@ -94,15 +98,22 @@ Bus::Bus(Name name)
   :name{static_cast<Name>(name)}, named{true} {}
 
 void Bus::step() {
-  _out = _in;
+  //_out = _in;
+  // For now, just clear the value of bus to be written to in
+  // next iteration in order to preserve network invariants
+  vals[Bus::offseta] = 0
+  // TODO: Benchmark handling of bus values
 }
 
 int Bus::read(){
-  return _out;
+  return vals[Bus::offseta];
 }
 
 void Bus::write(int v) {
-  _in = v;
+  //_in = v;
+  vals[Bus::offsetb] = v;
+}
+
 Name Bus::get_name() {
    return name;
  }
@@ -113,6 +124,13 @@ bool Bus::is_named() {
 
 void Bus::assign_to(Bus** b) {
   *b = this;
+}
+
+int Bus::offseta = 0;
+int Bus::offsetb = 1;
+void Bus::swapval() {
+  Bus::offseta = (Bus::offseta + 1) % 2;
+  Bus::offsetb = (Bus::offsetb + 1) % 2;
 }
 
 void Bus::assign(Busses from, BussesPtrPtr to) {
