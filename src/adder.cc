@@ -11,12 +11,14 @@ class Const : public SyncProcess {
 public:
   Const (const std::string name, Busses inputs, Busses outputs, unsigned value)
     :SyncProcess(name, inputs, outputs), value{value} {
-    out1 = get_out(0);
+    Bus::assign(outputs, {&out1});
   }
 
 protected:
   void step() {
+    std::cout << "foo" << out1->get_name() << std::endl;
     out1->write(value);
+    cout << "write " << value << endl;
   }
 
 private:
@@ -28,17 +30,17 @@ class Show: public SyncProcess {
 public:
   Show(const std::string name, Busses inputs, Busses outputs)
     :SyncProcess(name, inputs, outputs) {
-    in1 = get_in(0);
+    Bus::assign(inputs, {&res});
   }
 
 protected:
   void step() {
-    int val = in1->read();
+    int val = res->read();
     std::cout << val << std::endl;
   }
 
 private:
-  Bus* in1;
+  Bus* res;
 };
 
 class Add:public SyncProcess {
@@ -46,9 +48,8 @@ public:
   Add(const string name, Busses inputs, Busses outputs)
     :SyncProcess(name, inputs, outputs)
   {
-    in0 = get_in(0);
-    in1 = get_in(1);
-    out0 = get_out(0);
+    Bus::assign(inputs, {&in0, &in1});
+    Bus::assign(outputs, {&out0});
   }
 
 protected:

@@ -7,6 +7,7 @@
 #include <set>
 #include <map>
 
+//#include "threads.h"
 #include "sme.h"
 
 SyncProcess::SyncProcess(const std::string name,
@@ -52,25 +53,46 @@ vector<Bus*> SyncProcess::get_outs() {
   return outs;
 }
 
+SyncComponent::SyncComponent(Name name,
+			     Processes procs,
+			     Busses ins,
+			     Busses outs)
+  :name{name} {
+
+}
+
 Run::Run(int steps)
   :steps{steps} {}
 
-void Run::add_proc(std::initializer_list<SyncProcess*> list) {
+void Run::add_proc(Objects list) {
   for (auto e:list) {
     add_proc(e);
   }
 }
 
-void Run::add_proc(SyncProcess* p) {
-  procs.push_back(p);
-  auto ins = p->get_ins();
-  auto outs = p->get_outs();
+void Run::add_proc(SyncObject* proc) {
+  auto ins = proc->get_ins();
+  auto outs = proc->get_outs();
 
   for (Bus* p: ins) {
     busses.insert(p);
   }
   for (Bus* p: outs) {
     busses.insert(p);
+  }
+
+  // FIXME: We don't support all possible types here
+  // and the static_cast shouldn't be there
+  append_procs(static_cast<SyncProcess*>(proc));
+}
+
+void Run::append_procs(SyncProcess* p) {
+  procs.push_back(p);
+}
+
+void Run::append_procs(vector<SyncComponent*> proc) {
+  for (SyncProcess* p: procs) {
+    append_procs(p);
   }
 }
 
@@ -101,7 +123,7 @@ void Bus::step() {
   //_out = _in;
   // For now, just clear the value of bus to be written to in
   // next iteration in order to preserve network invariants
-  vals[Bus::offseta] = 0
+  vals[Bus::offseta] = 0;
   // TODO: Benchmark handling of bus values
 }
 
