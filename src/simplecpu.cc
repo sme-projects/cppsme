@@ -23,11 +23,7 @@ public:
   UCode(const string name, Busses ins, Busses outs)
     :SyncProcess(name, ins, outs)
   {
-    regsrc1 = get_out(0);
-    regsrc2 = get_out(1);
-    regdest = get_out(2);
-    regwrt = get_out(3);
-    aluop = get_out(4);
+    Bus::assign(outs, {&regsrc1, &regsrc2, &regdest, &regwrt, &aluop});
   }
 
 protected:
@@ -46,6 +42,14 @@ private:
   Bus* src_b;
   Bus* op;
   Bus* result;
+
+public:
+  ALU(const string name, Busses ins, Busses outs)
+    :SyncProcess(name, ins, outs)
+  {
+    Bus::assign(ins, {&src_a, &src_b, &op},
+		outs, {&result});
+  }
 
 protected:
   void step() {
@@ -69,16 +73,6 @@ protected:
     result->write(res);
     cout << res << endl;
   }
-
-public:
-  ALU(const string name, Busses ins, Busses outs)
-    :SyncProcess(name, ins, outs)
-  {
-    src_a = get_in(0);
-    src_b = get_in(1);
-    op = get_in(2);
-    result = get_out(0);
-  }
 };
 
 class Register : public SyncProcess {
@@ -94,6 +88,16 @@ private:
   Bus* wrt;
   Bus* input;
 
+public:
+  Register(const string name, Busses ins, Busses outs):
+    SyncProcess(name, ins, outs)
+  {
+    Bus::assign(outs, {&out1, &out2},
+		ins, {&src1, &src2, &dest, &wrt, &input});
+
+    regs.fill(1);
+  }
+
 protected:
   void step(){
     out1->write(regs[src1->read()]);
@@ -101,21 +105,6 @@ protected:
     if(wrt->read() > 0){
       regs[dest->read()] = input->read();
     }
-  }
-
-public:
-  Register(const string name, Busses ins, Busses outs):
-    SyncProcess(name, ins, outs)
-  {
-    out1 = get_out(0);
-    out2 = get_out(1);
-    src1 = get_in(0);
-    src2 = get_in(1);
-    dest = get_in(2);
-    wrt = get_in(3);
-    input = get_in(4);
-
-    regs.fill(1);
   }
 
 };
