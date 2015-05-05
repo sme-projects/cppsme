@@ -10,6 +10,8 @@ Makefile
 .dirstamp
 /src/cppsme
 /test/adder
+/test/ring
+/test/ring.cc
 callgrind.out*
 *.o
 *~

@@ -1,4 +1,6 @@
-noinst_PROGRAMS = adder
+noinst_PROGRAMS = adder ring
+EXTRA_DISt = ring.py
+CLEANFILES = ring.cc
 
 adder_CPPFLAGS = -I../src
 adder_LDADD = ../src/libsme.la
@@ -14,3 +16,11 @@ adder_SOURCES = adder.cc
 #simplecpu_LDADD = ../src/libsme.la 
 #simplecpu_LDFLAGS = -static
 #simplecpu_SOURCES = simplecpu.cc
+
+ring_CPPFLAGS = -I../src
+ring_LDADD = ../src/libsme.la
+ring_LDFLAGS = -static
+ring_SOURCES = ring.cc
+
+ring.cc: ring.py
+	$(PYTHON) $< > $@
