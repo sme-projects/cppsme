@@ -1,7 +1,16 @@
-bin_PROGRAMS = cppsme
+#bin_PROGRAMS = cppsme
+
+libincludedir = $(includedir)/src
+
+lib_LTLIBRARIES = libsme.la
 
 #AM_CXXFLAGS = -std=c++11
 
-cppsme_SOURCES = sme.cc sme.h adder.cc simplecpu.cc main.cc frogger.cc
+#dist_noinst_DATA = ring-gen.py
 
-cppsme_LDADD = @CURSES_LIB@
+libinclude_HEADERS = sme.h
+
+libsme_la_SOURCES = sme.cc sme.h main.cc threading.cc threading.h runner.cc runner.h queue.cc queue.h
+# frogger.cc simplecpu.cc adder.cc
+
+#cppsme_LDADD = @CURSES_LIB@

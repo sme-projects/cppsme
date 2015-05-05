@@ -2,14 +2,21 @@ AC_INIT([cppsme], [0.0.1])
 AC_CONFIG_SRCDIR([src/api_test.cc])
 AM_INIT_AUTOMAKE
 
+
 AC_CONFIG_MACRO_DIRS([m4])
+
+AC_PROG_CXX
+#AC_PROG_PYTHON
 
 # Enable compiler warnings/errors
 AX_CHECK_COMPILE_FLAG([-Wall], [CXXFLAGS="$CXXFLAGS -Wall"], [], [])
 AX_CHECK_COMPILE_FLAG([-Werror], [CXXFLAGS="$CXXFLAGS -Werror"], [], [])
 AX_CHECK_COMPILE_FLAG([-pedantic], [CXXFLAGS="$CXXFLAGS -pedantic"], [], [])
 
+AX_CHECK_COMPILE_FLAG([-pthread], [CXXFLAGS="$CXXFLAGS -pthread"], [], [])
+
 AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
+LT_INIT
 
 AX_WITH_CURSES
 
@@ -18,6 +25,5 @@ AX_WITH_CURSES
 AC_SUBST(INTI_CFLAGS)
 AC_SUBST(INTI_LIBS)
 
-AC_PROG_CXX
-
-AC_OUTPUT(Makefile src/Makefile)
+AC_CONFIG_FILES([Makefile src/Makefile test/Makefile])
+AC_OUTPUT
