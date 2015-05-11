@@ -15,6 +15,8 @@
 #include <iostream>
 #include <thread>
 #include <vector>
+#include <cstdlib>
+#include <chrono>
 
 //#include "queue.h"
 #include "bqueue.h"
@@ -25,12 +27,18 @@
 ThreadedRun::ThreadedRun(int steps, int threads)
   :Runner(steps) {
     if (threads < 1) {
-      this->threads = std::thread::hardware_concurrency();
-      if (this->threads == 0) {
-	std::cout << "Unable to automatically determine level of hardware concurrency, setting to 1 (single threaded mode" << std::endl;
-	this->threads = 1;
+      char* sme_threads_env = std::getenv("SME_THREADS");
+      if (sme_threads_env != nullptr) {
+	this->threads = std::stoi(sme_threads_env, 0, 10);
+	std::cout << "Running " << this->threads << " thread(s) as specified by environment variable\n";
       } else {
-	std::cout << "Detected " << this->threads << " threads on this system\n";
+	this->threads = std::thread::hardware_concurrency();
+	if (this->threads == 0) {
+	  std::cout << "Unable to automatically determine level of hardware concurrency, setting to 1 (single threaded mode" << std::endl;
+	  this->threads = 1;
+	} else {
+	  std::cout << "Detected " << this->threads << " threads on this system\n";
+	}
       }
     }
 }
@@ -60,8 +68,10 @@ void ThreadedRun::start() {
   }
   auto q = BQueue(threads, steps);
   q.populate(procs, busses);
+
+  auto start = std::chrono::high_resolution_clock::now();
   std::thread** t = new std::thread* [threads];
-  std::cout << "----------------------+++++" << threads;
+  //std::cout << "----------------------+++++" << threads;
   for(unsigned i = 0; i < threads; ++i) {
     t[i] = new std::thread(instance, &q, i);
   }
@@ -70,5 +80,8 @@ void ThreadedRun::start() {
     t[i]->join();
     delete t[i];
   }
+  auto end = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> diff = end-start;
+  std::cout << "Executed network in " << diff.count() << "s\n";
   delete[] t;
 }
