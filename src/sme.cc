@@ -67,20 +67,21 @@ Bus::Bus(Name name)
   :name{static_cast<Name>(name)}, named{true} {}
 
 void Bus::step() {
-  //_out = _in;
+  _out = _in;
   // For now, just clear the value of bus to be written to in
   // next iteration in order to preserve network invariants
-  vals[Bus::offseta] = 0;
+  //vals[Bus::offseta] = 0;
   // TODO: Benchmark handling of bus values
 }
 
 int Bus::read(){
-  return vals[Bus::offseta];
+  return _out;
+  //return vals[Bus::offseta];
 }
 
 void Bus::write(int v) {
-  //_in = v;
-  vals[Bus::offsetb] = v;
+  _in = v;
+  //vals[Bus::offsetb] = v;
 }
 
 Name Bus::get_name() {
@@ -95,12 +96,12 @@ void Bus::assign_to(Bus** b) {
   *b = this;
 }
 
-int Bus::offseta = 0;
-int Bus::offsetb = 1;
-void Bus::swapval() {
-  Bus::offseta = (Bus::offseta + 1) % 2;
-  Bus::offsetb = (Bus::offsetb + 1) % 2;
-}
+// int Bus::offseta = 0;
+// int Bus::offsetb = 1;
+// void Bus::swapval() {
+//   Bus::offseta = (Bus::offseta + 1) % 2;
+//   Bus::offsetb = (Bus::offsetb + 1) % 2;
+// }
 
 void Bus::assign(Busses from, BussesPtrPtr to) {
   if (from.size() != to.size()) {
