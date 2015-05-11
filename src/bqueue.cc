@@ -2,6 +2,7 @@
 #include <vector>
 #include <chrono>
 #include <thread>
+#include <set>
 
 #include "bqueue.h"
 #include "sme.h"
@@ -117,9 +118,6 @@ public:
 private:
   int id;
   State* state;
-  int bend;
-  int bstart;
-  int i;
 protected:
   void step() {
     std::unique_lock<std::mutex> lk(state->count_mutex);
@@ -131,61 +129,50 @@ protected:
 
 class BusStep : public SyncProcess {
 public:
-  BusStep(State* state, Bus** busses, int bstart, int bend)
-    :SyncProcess("bussetp", {}, {}), state{state},busses{busses}, bstart{bstart}, bend{bend} {}
+  BusStep(State* state, Bus** busses, int start, int end)
+    :SyncProcess("bussetp", {}, {}), state{state},busses{busses}, start{start}, end{end} {}
 private:
   State* state;
   Bus** busses;
-  int bend;
-  int bstart;
+  int start = 0;
+  int end = 0;
   int i;
 protected:
   void step() {
-    for(i=bstart; i <= bend; i++) {
+    for(i=start; i <= end; i++) {
       busses[i]->step();
     }
   }
 };
-
-class NOP: public SyncProcess {
-public:
-  NOP()
-    :SyncProcess("nop", {}, {}) {}
-protected:
-  void step() {
-    ;
-  }
-};
-
 
 BQueue::BQueue(int threads, int iterations) {
   this->threads = threads;
   state = new State();
   state->iterations = iterations;
   state->threads = threads;
-  for (int i = 0; i < 4; i++) {
-  //  std::cout << "release " << i << std::endl;
-  //  state->block[i].test_and_set(std::memory_order_acquire);
-    state->block[i] = true;
+  state->thread_loc = new int[threads];
+  for (int i = 0; i < threads; i++) {
+    state->thread_loc[i] = 0;
   }
+  //for (int i = 0; i < 4; i++) {
+  //  state->block[i] = true;
+  //}
 }
 
-void BQueue::populate(vector<SyncProcess*> new_els, set<Bus*> busses) {
+void BQueue::populate(vector<SyncProcess*> new_els, std::set<Bus*> busses) {
   constexpr int extra_procs = 4;
 
   // Get busses
   int busses_count = busses.size();
   int busses_part = busses_count/threads;
-  this->busses = new Bus*[busses_num];
-  i = 0;
+  this->busses = new Bus*[busses_count];
+  int i = 0;
   for(auto bus:busses) {
     this->busses[i++] = bus;
   }
 
   // Number of processes
   size = new_els.size();
-
-  //How many threads to partition into
 
   // ceil(size/threads)
   int part_ceil = (size + threads - 1)/threads;
@@ -197,7 +184,7 @@ void BQueue::populate(vector<SyncProcess*> new_els, set<Bus*> busses) {
 
   int thread_num = 0;
 
-  int i = 0; //new_els counter
+  i = 0; //new_els counter
   int j = 0; //els counter
   int k = 0; //partition counter
   els[j++] = new_els[i++];
@@ -213,12 +200,12 @@ void BQueue::populate(vector<SyncProcess*> new_els, set<Bus*> busses) {
   }
   els[j++] = new Syncer(thread_num, state);
   els[j++] = new BusStep(state, this->busses, busses_part*k, busses_count-1);
-  els[j++] = new Reset(thread_num, state)
+  els[j++] = new Reset(thread_num, state);
   els[j] = nullptr;
 
   // Set thread offsets
   for(int i = 0; i < threads; i++) {
-    thread_offsets[i] = (part_floor + 2)*i;
+    thread_offsets[i] = (part_floor + extra_procs)*i;
   }
 
 }
