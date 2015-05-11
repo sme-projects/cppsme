@@ -52,7 +52,7 @@ void Runner::start() {
     for (Bus* b: busses){
       b->step();
     }
-    Bus::swapval();
+    //Bus::swapval();
     for (SyncProcess* e:this->procs) {
       e->step();
     }
