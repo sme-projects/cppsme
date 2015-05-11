@@ -7,6 +7,7 @@
 #include <vector>
 #include <mutex>
 #include <condition_variable>
+#include <set>
 
 #include "sme.h"
 
@@ -18,36 +19,27 @@ struct State {
   int iterations = 0;
   volatile std::atomic<int> iter_end = {0}; // Number of threads that are idling in current it
   int threads = 1;
-  int thread_loc[4] = {0,0,0,0};
+  //int thread_loc[4] = {0,0,0,0};
+  int* thread_loc;
   std::mutex count_mutex;
   std::condition_variable cv;
   std::condition_variable cv2;
-  //bool block = true;
   };
 
 //template<typename T>
 class BQueue {
 private:
-  SyncProcess** els;
-  Bus** busses;
   int size;
   int threads;
-  //std::atomic<int>* iterations;
-  //int iterations;
-  //std::atomic<int>* iterations;
+
+  SyncProcess** els;
+  Bus** busses;
   State* state;
 
-  //atomic_size_t loc;
   //std::atomic<int>* loc;
   int loc;
 
-  // Lock function
-  //Lock* lock;
-
   // State variables
-  int subscribed;
-
-  //int thread_loc[4] = {0,0,0,0};
   int thread_offsets[4] = {0,0,0,0};
 
   void stop();
@@ -55,7 +47,7 @@ public:
   BQueue(int threads, int iterations);
   ~BQueue();
   // TODO: Accept generic iterable container of parametric type T
-  void populate(vector<SyncProcess*> els, map<Bus*> busses);
+  void populate(vector<SyncProcess*> els, std::set<Bus*> busses);
   SyncProcess* next(int);
 };
 
