@@ -1,7 +1,4 @@
-nodes = 10
-iterations = 500000
-
-print("""#include <iostream>
+#include <iostream>
 
 #include "sme.h"
 #include "threading.h"
@@ -61,21 +58,19 @@ private:
 };
 
 int main() {
-""")
 
-# Create busses
-print("Bus* bus = new Bus [%d];" % nodes);
+  int nodes=100000;
+  int iterations=50000;
 
-print("auto r = ThreadedRun(%d, 0);" %iterations)
+  Bus* bus = new Bus [nodes];
+  auto r = ThreadedRun(iterations, 0);
+  r.add_proc(new GenNode("gennode", {&bus[nodes-1]}, {&bus[0]}, 1));
+  for(int i = 0; i < nodes - 1; i++) {
+    r.add_proc(new Node("node", {&bus[i]}, {&bus[i+1]}));
+  }
 
-print("r.add_proc(new GenNode(\"gennode\", {&bus[%d]}, {&bus[%d]}, 1));" % (nodes - 1, 4))
-for i in range(nodes-1):
-    print("r.add_proc(new Node(\"node%d\", {&bus[%d]}, {&bus[%d]}));" % (i, i, i+1))
-
-print("""
 r.start();
 
 return 0;
 
 }
-""")

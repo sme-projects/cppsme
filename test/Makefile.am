@@ -1,4 +1,4 @@
-noinst_PROGRAMS = adder ring sleeping_ring
+noinst_PROGRAMS = adder ring sleeping_ring ring_dynamic
 EXTRA_DISt = ring.py
 CLEANFILES = ring.cc
 
@@ -27,6 +27,11 @@ sleeping_ring_CPPFLAGS = -I../src -fno-var-tracking
 sleeping_ring_LDADD = ../src/libsme.la
 sleeping_ring_LDFLAGS = -static
 sleeping_ring_SOURCES = sleeping_ring.cc
+
+ring_dynamic_CPPFLAGS = -I../src -fno-var-tracking
+ring_dynamic_LDADD = ../src/libsme.la
+ring_dynamic_LDFLAGS = -static
+ring_dynamic_SOURCES = ring_dynamic.cc
 
 
 ring.cc: ring.py
