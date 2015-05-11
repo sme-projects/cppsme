@@ -68,6 +68,7 @@ Bus::Bus(Name name)
 
 void Bus::step() {
   _out = _in;
+  _in = 0;
   // For now, just clear the value of bus to be written to in
   // next iteration in order to preserve network invariants
   //vals[Bus::offseta] = 0;
