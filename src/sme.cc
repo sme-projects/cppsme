@@ -61,59 +61,6 @@ SyncComponent::SyncComponent(Name name,
 
 }
 
-Run::Run(int steps)
-  :steps{steps} {}
-
-void Run::add_proc(Objects list) {
-  for (auto e:list) {
-    add_proc(e);
-  }
-}
-
-void Run::add_proc(SyncObject* proc) {
-  auto ins = proc->get_ins();
-  auto outs = proc->get_outs();
-
-  for (Bus* p: ins) {
-    busses.insert(p);
-  }
-  for (Bus* p: outs) {
-    busses.insert(p);
-  }
-
-  // FIXME: We don't support all possible types here
-  // and the static_cast shouldn't be there
-  append_procs(static_cast<SyncProcess*>(proc));
-}
-
-void Run::append_procs(SyncProcess* p) {
-  procs.push_back(p);
-}
-
-void Run::append_procs(vector<SyncComponent*> proc) {
-  for (SyncProcess* p: procs) {
-    append_procs(p);
-  }
-}
-
-void Run::start() {
-  //Bus::initval();
-
-  int i;
-  for(i = 0; i < steps; i++){
-    // TODO: Decide on bus handling implementation
-    for (Bus* b: busses){
-      b->step();
-    }
-    Bus::swapval();
-    for (SyncProcess* e:this->procs) {
-      e->step();
-    }
-  }
-  for (SyncProcess* e: procs) {
-    delete e;
-  }
-}
 
 Bus::Bus() {}
 Bus::Bus(Name name)

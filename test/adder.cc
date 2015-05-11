@@ -2,6 +2,7 @@
 #include <string>
 
 #include "sme.h"
+#include "threading.h"
 
 using std::string;
 using std::cout;
@@ -16,9 +17,9 @@ public:
 
 protected:
   void step() {
-    std::cout << "foo" << out1->get_name() << std::endl;
+    //std::cout << "foo" << out1->get_name() << std::endl;
     out1->write(value);
-    cout << "write " << value << endl;
+    //cout << "write " << value << endl;
   }
 
 private:
@@ -35,8 +36,8 @@ public:
 
 protected:
   void step() {
-    int val = res->read();
-    std::cout << val << std::endl;
+    (void) res->read();
+    //std::cout << val << std::endl;
   }
 
 private:
@@ -69,7 +70,7 @@ void adder() {
   auto in2 = Bus();
   auto res = Bus();
 
-  auto r = Run(10);
+  auto r = ThreadedRun(10, 0);
   r.add_proc({new Const("const", {}, {&in1}, 2),
 	new Const("const", {}, {&in2}, 4),
 	new Add("add", {&in1, &in2}, {&res}),

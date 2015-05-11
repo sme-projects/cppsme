@@ -10,7 +10,7 @@ lib_LTLIBRARIES = libsme.la
 
 libinclude_HEADERS = sme.h
 
-libsme_la_SOURCES = sme.cc sme.h main.cc threading.cc threading.h runner.cc runner.h queue.cc queue.h
+libsme_la_SOURCES = sme.cc sme.h main.cc threading.cc threading.h runner.cc runner.h queue.cc queue.h bqueue.cc bqueue.h
 # frogger.cc simplecpu.cc adder.cc
 
 #cppsme_LDADD = @CURSES_LIB@

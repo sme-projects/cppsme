@@ -53,7 +53,7 @@ public:
 
 protected:
   void step() {
-    int res;
+    int res = 0;
     int a = src_a->read();
     int b = src_b->read();
     switch (op->read()) {

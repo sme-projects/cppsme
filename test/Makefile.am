@@ -1,4 +1,4 @@
-noinst_PROGRAMS = adder ring
+noinst_PROGRAMS = adder ring sleeping_ring
 EXTRA_DISt = ring.py
 CLEANFILES = ring.cc
 
@@ -17,10 +17,17 @@ adder_SOURCES = adder.cc
 #simplecpu_LDFLAGS = -static
 #simplecpu_SOURCES = simplecpu.cc
 
-ring_CPPFLAGS = -I../src
+# var-tracking makes the build take forever
+ring_CPPFLAGS = -I../src -fno-var-tracking
 ring_LDADD = ../src/libsme.la
 ring_LDFLAGS = -static
 ring_SOURCES = ring.cc
+
+sleeping_ring_CPPFLAGS = -I../src -fno-var-tracking
+sleeping_ring_LDADD = ../src/libsme.la
+sleeping_ring_LDFLAGS = -static
+sleeping_ring_SOURCES = sleeping_ring.cc
+
 
 ring.cc: ring.py
 	$(PYTHON) $< > $@

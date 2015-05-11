@@ -11,6 +11,7 @@ Makefile
 /src/cppsme
 /test/adder
 /test/ring
+/test/sleeping_ring
 /test/ring.cc
 callgrind.out*
 *.o
