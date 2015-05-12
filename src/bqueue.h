@@ -40,7 +40,7 @@ private:
   int loc;
 
   // State variables
-  int thread_offsets[4] = {0,0,0,0};
+  int* thread_offsets;
 
   void stop();
 public:

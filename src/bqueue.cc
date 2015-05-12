@@ -168,12 +168,10 @@ BQueue::BQueue(int threads, int iterations) {
   state->iterations = iterations;
   state->threads = threads;
   state->thread_loc = new int[threads];
+  thread_offsets = new int[threads];
   for (int i = 0; i < threads; i++) {
     state->thread_loc[i] = 0;
   }
-  //for (int i = 0; i < 4; i++) {
-  //  state->block[i] = true;
-  //}
 }
 
 void BQueue::populate(vector<SyncProcess*> new_els, std::set<Bus*> busses) {
