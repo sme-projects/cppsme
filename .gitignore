@@ -12,6 +12,7 @@ Makefile
 /test/adder
 /test/ring
 /test/sleeping_ring
+/test/dynamic_ring
 /test/ring.cc
 callgrind.out*
 *.o
