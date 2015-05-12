@@ -60,6 +60,11 @@ void ThreadedRun::instance(BQueue* q, int id) {
   }*/
 
 void ThreadedRun::start() {
+  if  (procs.size() < 1) {
+    std::cout << "No processes to execute. Terminating.\n";
+    std::exit(1);
+  }
+
   // It makes no sense to have more threads than network processes
   if (procs.size() < threads) {
     threads = procs.size();
