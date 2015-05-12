@@ -14,6 +14,9 @@ SyncProcess::SyncProcess(const std::string name,
 			 Busses inputs,
 			 Busses outputs)
   :name{name} {
+  // TODO: Is it possible to validate that the bus pointers
+  //       are pointing to an actual instance of Bus()?
+  //       We're getting some wierd errors if thats not the case.
   for(Bus* b : inputs){
     ins.push_back(b);
     if (b->is_named()) {
