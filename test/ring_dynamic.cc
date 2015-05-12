@@ -2,6 +2,7 @@
 
 #include "sme.h"
 #include "threading.h"
+#include "get_env.h"
 
 class GenNode: public SyncProcess {
 public:
@@ -59,10 +60,12 @@ private:
 
 int main() {
 
-  int nodes=100000;
-  int iterations=50000;
+  //int nodes=100000;
+  //int iterations=50000;
 
-  Bus* bus = new Bus [nodes];
+  SME_TEST_GET_ENV;
+
+  Bus* bus = new Bus[nodes];
   auto r = ThreadedRun(iterations, 0);
   r.add_proc(new GenNode("gennode", {&bus[nodes-1]}, {&bus[0]}, 1));
   for(int i = 0; i < nodes - 1; i++) {
