@@ -1,4 +1,5 @@
 #include <vector>
+#include <chrono>
 
 #include "sme.h"
 #include "runner.h"
@@ -47,6 +48,7 @@ vector<SyncProcess*> Runner::get_proc() {
 void Runner::start() {
   std::cout << "oldver\n";
   int i;
+  auto start = std::chrono::high_resolution_clock::now();
   for(i = 0; i < steps; i++){
     // TODO: Decide on bus handling implementation
     for (Bus* b: busses){
@@ -57,6 +59,9 @@ void Runner::start() {
       e->step();
     }
   }
+  auto end = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> diff = end-start;
+  std::cout << "Executed network in " << diff.count() << "s\n";
   for (SyncProcess* e: procs) {
     delete e;
   }
