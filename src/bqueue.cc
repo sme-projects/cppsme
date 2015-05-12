@@ -68,6 +68,23 @@ protected:
   }
   };*/
 
+class SingleReset : public SyncProcess {
+public:
+  SingleReset(int id, State* state)
+    :SyncProcess("singlereset", {}, {}), id{id}, state{state} {}
+private:
+  int id;
+  State* state;
+protected:
+  void step() {
+    if(--state->iterations > 0) {
+      for(int i = 0; i < state->threads; i++) {
+	state->thread_loc[i] = 0;
+      }
+    }
+  }
+};
+
 
 class Reset : public SyncProcess {
 public:
@@ -160,7 +177,12 @@ BQueue::BQueue(int threads, int iterations) {
 }
 
 void BQueue::populate(vector<SyncProcess*> new_els, std::set<Bus*> busses) {
-  constexpr int extra_procs = 4;
+  int extra_procs;
+  if (threads == 1) {
+    extra_procs = 3;
+  } else {
+    extra_procs = 4;
+  }
 
   // Get busses
   int busses_count = busses.size();
@@ -198,9 +220,14 @@ void BQueue::populate(vector<SyncProcess*> new_els, std::set<Bus*> busses) {
     }
     els[j++] = new_els[i];
   }
-  els[j++] = new Syncer(thread_num, state);
-  els[j++] = new BusStep(state, this->busses, busses_part*k, busses_count-1);
-  els[j++] = new Reset(thread_num, state);
+  if (threads > 1) {
+    els[j++] = new Syncer(thread_num, state);
+    els[j++] = new BusStep(state, this->busses, busses_part*k, busses_count-1);
+    els[j++] = new Reset(thread_num, state);
+  } else {
+    els[j++] = new BusStep(state, this->busses, busses_part*k, busses_count-1);
+    els[j++] = new SingleReset(thread_num, state);
+  }
   els[j] = nullptr;
 
   // Set thread offsets
