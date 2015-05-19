@@ -5,6 +5,7 @@ print("""#include <iostream>
 
 #include "sme.h"
 #include "threading.h"
+#include "cqueue.h"
 
 class GenNode: public SyncProcess {
 public:
@@ -73,7 +74,7 @@ for i in range(nodes-1):
     print("r.add_proc(new Node(\"node%d\", {&bus[%d]}, {&bus[%d]}));" % (i, i, i+1))
 
 print("""
-r.start();
+r.start<CQueue>();
 
 return 0;
 

@@ -3,6 +3,8 @@
 #include "sme.h"
 #include "threading.h"
 #include "get_env.h"
+#include "cqueue.h"
+#include "bqueue.h"
 
 class GenNode: public SyncProcess {
 public:
@@ -63,6 +65,7 @@ int main() {
   //int nodes=100000;
   //int iterations=50000;
 
+  SME_TEST_DEFS;
   SME_TEST_GET_ENV;
 
   Bus* bus = new Bus[nodes];
@@ -71,8 +74,10 @@ int main() {
   for(int i = 0; i < nodes - 1; i++) {
     r.add_proc(new Node("node", {&bus[i]}, {&bus[i+1]}));
   }
-
-r.start();
+  if(test_cqueue)
+    r.start<CQueue>();
+  if(test_bqueue)
+    r.start<BQueue>();
 
 return 0;
 

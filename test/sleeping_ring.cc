@@ -4,6 +4,7 @@
 
 #include "sme.h"
 #include "threading.h"
+#include "cqueue.h"
 
 class GenNode: public SyncProcess {
 public:
@@ -91,7 +92,7 @@ r.add_proc(new Node("node8", {&bus[8]}, {&bus[9]}));
 r.add_proc(new Node("node9", {&bus[9]}, {&bus[10]}));
 r.add_proc(new Sleeper("node10", {&bus[10]}, {&bus[11]}));
 
-r.start();
+ r.start<CQueue>();
 
 return 0;
 

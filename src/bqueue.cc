@@ -71,10 +71,13 @@ protected:
 class SingleReset : public SyncProcess {
 public:
   SingleReset(int id, State* state)
-    :SyncProcess("singlereset", {}, {}), id{id}, state{state} {}
+    :SyncProcess("singlereset", {}, {}), id{id}, state{state} {
+      this->state = state;
+    }
 private:
   int id;
   State* state;
+
 protected:
   void step() {
     if(--state->iterations > 0) {
@@ -109,58 +112,7 @@ protected:
   }
 };
 
-class Syncer : public SyncProcess {
-public:
-  Syncer(int id, State* state)
-    :SyncProcess("locker", {}, {}), id{id}, state{state} {}
 
-private:
-  int id;
-  State* state;
-protected:
-  void step() {
-    std::unique_lock<std::mutex> lk(state->count_mutex);
-    state->cv.wait(lk, [this]{return !(state->iter_end < state->threads - 1);});
-    state->iter_end.store(0);
-    state->cv2.notify_all();
-  }
-};
-
-
-class Locker : public SyncProcess {
-public:
-  Locker(int id, State* state)
-    :SyncProcess("locker", {}, {}), id{id}, state{state} {}
-
-private:
-  int id;
-  State* state;
-protected:
-  void step() {
-    std::unique_lock<std::mutex> lk(state->count_mutex);
-    ++state->iter_end;
-    state->cv.notify_all();
-    state->cv2.wait(lk);
-  }
-};
-
-class BusStep : public SyncProcess {
-public:
-  BusStep(State* state, Bus** busses, int start, int end)
-    :SyncProcess("bussetp", {}, {}), state{state},busses{busses}, start{start}, end{end} {}
-private:
-  State* state;
-  Bus** busses;
-  int start = 0;
-  int end = 0;
-  int i;
-protected:
-  void step() {
-    for(i=start; i <= end; i++) {
-      busses[i]->step();
-    }
-  }
-};
 
 BQueue::BQueue(int threads, int iterations) {
   this->threads = threads;
@@ -232,11 +184,11 @@ void BQueue::populate(vector<SyncProcess*> new_els, std::set<Bus*> busses) {
   for(int i = 0; i < threads; i++) {
     thread_offsets[i] = (part_floor + extra_procs)*i;
   }
-
 }
 
 SyncProcess* BQueue::next(int id) {
-  return els[state->thread_loc[id]++ + thread_offsets[id]];
+  int index=state->thread_loc[id]++ + thread_offsets[id];
+  return els[index];
 }
 
 BQueue::~BQueue() {

@@ -1,19 +1,17 @@
 // -*- mode:c++ -*-
 
-#ifndef SME_QUEUE_H
-#define SME_QUEUE_H
+#ifndef SME_CQUEUE_H
+#define SME_CQUEUE_H
 
 #include <atomic>
 #include <vector>
+#include <condition_variable>
+#include <set>
 
 #include "sme.h"
+#include "queue_common.h"
 
-using std::atomic_size_t;
-using std::vector;
-
-typedef int (*fptr)();
-
-struct State {
+/*struct State {
   volatile std::atomic<int> loc = {0};
   //volatile std::atomic<int> iterations = {0};
   int iterations = 0;
@@ -23,47 +21,28 @@ struct State {
   std::atomic_flag block[4] = {ATOMIC_FLAG_INIT, ATOMIC_FLAG_INIT, ATOMIC_FLAG_INIT, ATOMIC_FLAG_INIT};
   volatile std::atomic<int> block_count = {0};
   //bool block = true;
-};
+  };*/
 
-//template<typename T>
 class CQueue {
+
 private:
   SyncProcess** els;
   int size;
   int threads;
-  //std::atomic<int>* iterations;
-  //int iterations;
-  //std::atomic<int>* iterations;
-  volatile State* state;
+  State* state;
 
-  //atomic_size_t loc;
-  //std::atomic<int>* loc;
   int loc;
+  Bus** busses;
 
-  // Lock function
-  //Lock* lock;
-
-  // State variables
   int subscribed;
-
-  void stop();
 public:
   CQueue(int threads, int iterations);
   ~CQueue();
+
   // TODO: Accept generic iterable container of parametric type T
-  void populate(vector<SyncProcess*> els);
-  SyncProcess* next();
+  void populate(vector<SyncProcess*> els, std::set<Bus*> busses);
+
+  SyncProcess* next(int);
 };
 
-struct Timed {
-  void next();
-  void spinlock();
-};
-
-struct Untimed {
-  void next();
-  void spinlock();
-};
-
-
-#endif //SME_QUEUE_H
+#endif //SME_CQUEUE_H

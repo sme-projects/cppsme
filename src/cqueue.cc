@@ -1,18 +1,10 @@
 // -*- mode:c++ -*-
 
-// Simple thread-safe lock-free circular queue. will optionally block
-// until all threads has finished executing before wrapping
+//#include <atomic>
+//#include <vector>
 
-// Statement: By letting last n elements (where n is the number of
-// threads) of the queue be a blocking (spinlock) function which
-// returns the length of time they have been blocking. Can we then
-// always ensure that those threads are spread evenly over the
-// CPU-threads
-
-#include <atomic>
-#include <vector>
-
-#include "queue.h"
+#include "cqueue.h"
+#include "queue_common.h"
 #include "sme.h"
 
 /*class Barrier: public SyncProcess {
@@ -54,7 +46,7 @@ protected:
   };*/
 
 
-class SpinLock: public SyncProcess {
+/*class SpinLock: public SyncProcess {
 public:
   SpinLock(const std::string name, Busses ins, Busses outs,
 	   volatile State* state)
@@ -103,55 +95,119 @@ protected:
     state->block_count = 0;
 
   }
+  };*/
+
+
+class CQueue_Reset : public SyncProcess {
+public:
+  CQueue_Reset(int id, State* state)
+    :SyncProcess("reset", {}, {}), id{id}, state{state} {}
+
+private:
+  int id;
+  State* state;
+
+protected:
+  void step() {
+    std::unique_lock<std::mutex> lk(state->count_mutex);
+    state->cv.wait(lk, [this]{return !(state->iter_end < state->threads - 1);});
+    state->iter_end.store(0);
+    if(--state->iterations > 0) {
+      state->loc.store(0);
+    }
+    state->cv2.notify_all();
+  }
 };
 
+class CQueue_SingleReset : public SyncProcess {
+public:
+  CQueue_SingleReset(State* state)
+    :SyncProcess("singlereset", {}, {}), state{state} {}
+
+private:
+  State* state;
+
+protected:
+  void step() {
+    if(--state->iterations > 0) {
+      state->loc.store(0);
+    }
+  }
+};
 
 CQueue::CQueue(int threads, int iterations) {
   this->threads = threads;
   state = new State();
+  state->iter_end.store(0);
   state->iterations = iterations;
   state->threads = threads;
-  for (int i = 0; i < 4; i++) {
-    std::cout << "release " << i << std::endl;
-    state->block[i].test_and_set(std::memory_order_acquire);
-    //state->block[i] = true;
-  }
 
 }
 
 // TODO: Accept generic iterable types. Corresponding note in h file
-void CQueue::populate(vector<SyncProcess*> new_els){
-  // XXX. Look this up
+void CQueue::populate(vector<SyncProcess*> new_els, std::set<Bus*> busses){
+  int extra_procs;
+  if (threads == 1) {
+    extra_procs = 3;
+  } else {
+    extra_procs = 4;
+  }
+
   size = new_els.size();
-  std::cout << size
-	    << std::endl;
+
   int i = 0;
+  int busses_count = busses.size();
+  // Populate array with busses
+  this->busses = new Bus*[busses_count];
+  for (auto bus:busses) {
+    this->busses[i++] = bus;
+  }
+
+  i = 0;
 
   // Allocate array of pointers to objects in the queue
-  els = new SyncProcess* [size + threads*2];
+  els = new SyncProcess* [size + threads*extra_procs];
 
   // Copy function references to array
   for(auto el: new_els) {
-    els[i] = el;
-    ++i;
+    els[i++] = el;
   }
-  for(int i = 0; i < threads - 1; i++) {
-    els[size + i] = new SpinLock("lock", {}, {}, state);
+  // We only need to sync before propagating busses when using
+  // multithreaded mode
+  if (threads > 1) {
+    for(i = size; i < size + threads - 1; i++) {
+      els[i] = new Locker(0, state);
+    }
+    els[i++] = new Syncer(0, state);
   }
-  els[size + threads - 1] = new SpinLock("reset", {}, {}, state);
-  //for(int i = 0; i < threads; i++) {
-    // FIXME: Memory leak
-    //els[size + i] = new Barrier("barrier", {}, {}, state, 0, 0);
-  //}
-  for(int i = threads; i < threads*2; i++) {
-    els[size + i] = nullptr;
+  // Add bus steppers
+  int busses_part = busses_count/threads;
+  volatile int j = 0;
+  for (; j < threads - 1; j++) {
+    els[i++] = new BusStep(state, this->busses, busses_part*j, busses_part*(j+1)-1);
   }
+  els[i++] = new BusStep(state, this->busses, busses_part*j, busses_count - 1);
+  // Add final sync step
+
+  for(j = 0; j < threads - 1; j++) {
+    els[i++] = new Locker(0, state);
+  }
+  if (threads > 1) {
+      els[i++] = new CQueue_Reset(0, state);
+  } else {
+    els[i++] = new CQueue_SingleReset(state);
+  }
+  // Place a nullpointer at the end of array to make threads terminate
+  for(j = 0; j < threads - 1; j++) {
+    els[i++] = nullptr;
+  }
+  els[i] = nullptr;
 }
 
 //template <typename T>
-SyncProcess* CQueue::next() {
+SyncProcess* CQueue::next(int i) {
   //std::cout << state->loc.fetch_add(1) << std::endl;
-  return els[state->loc.fetch_add(1)];
+  return els[state->loc.fetch_add(1, std::memory_order_relaxed)];
 }
 
 //template <typename T>

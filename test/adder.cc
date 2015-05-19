@@ -3,6 +3,7 @@
 
 #include "sme.h"
 #include "threading.h"
+#include "cqueue.h"
 
 using std::string;
 using std::cout;
@@ -36,8 +37,8 @@ public:
 
 protected:
   void step() {
-    (void) res->read();
-    //std::cout << val << std::endl;
+    int val = res->read();
+    std::cout << val << std::endl;
   }
 
 private:
@@ -75,5 +76,5 @@ void adder() {
 	new Const("const", {}, {&in2}, 4),
 	new Add("add", {&in1, &in2}, {&res}),
 	new Show("print", {&res}, {})});
-  r.start();
+  r.start<CQueue>();
 }

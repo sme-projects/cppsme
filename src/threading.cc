@@ -18,7 +18,7 @@
 #include <cstdlib>
 #include <chrono>
 
-//#include "queue.h"
+#include "cqueue.h"
 #include "bqueue.h"
 #include "sme.h"
 #include "threading.h"
@@ -47,7 +47,8 @@ ThreadedRun::ThreadedRun(int steps, int threads)
     //  ThreadedRun(steps, 0);
     //}
 
-void ThreadedRun::instance(BQueue* q, int id) {
+template <class T>
+void ThreadedRun::instance(T* q, int id) {
   SyncProcess* p = q->next(id);
   while (p != nullptr) {
     p->step();
@@ -59,6 +60,8 @@ void ThreadedRun::instance(BQueue* q, int id) {
 /*void ThreadedRun::blocking() {
   }*/
 
+
+template <class T>
 void ThreadedRun::start() {
   if  (procs.size() < 1) {
     std::cout << "No processes to execute. Terminating.\n";
@@ -71,14 +74,14 @@ void ThreadedRun::start() {
     std::cout << "Less network processes than threads. Limiting number of threads to "\
 	      << threads << std::endl;
   }
-  auto q = BQueue(threads, steps);
+  auto q = T(threads, steps);
   q.populate(procs, busses);
 
   auto start = std::chrono::high_resolution_clock::now();
   std::thread** t = new std::thread* [threads];
-  //std::cout << "----------------------+++++" << threads;
+
   for(unsigned i = 0; i < threads; ++i) {
-    t[i] = new std::thread(instance, &q, i);
+    t[i] = new std::thread(instance<T>, &q, i);
   }
 
   for(unsigned int i = 0; i < threads; ++i) {
@@ -87,6 +90,11 @@ void ThreadedRun::start() {
   }
   auto end = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> diff = end-start;
-  std::cout << "Executed network in " << diff.count() << "s\n";
+  std::cout << __PRETTY_FUNCTION__ <<  " executed network in " << diff.count() << "s\n";
   delete[] t;
 }
+
+template void ThreadedRun::instance<CQueue>(CQueue*, int);
+template void ThreadedRun::instance<BQueue>(BQueue*, int);
+template void ThreadedRun::start<CQueue>();
+template void ThreadedRun::start<BQueue>();
