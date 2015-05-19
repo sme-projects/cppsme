@@ -7,6 +7,11 @@
 #include <set>
 #include <map>
 
+#include "threading.h"
+#include "cqueue.h"
+#include "bqueue.h"
+
+
 #ifndef CPPSME_SME_H_
 #define CPPSME_SME_H_
 
