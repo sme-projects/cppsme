@@ -51,6 +51,7 @@ public:
   Name get_name();
   bool is_named();
   static void assign(std::initializer_list<Bus*>, std::initializer_list<Bus**>);
+  static void raw_assign(std::vector<Bus*>,  Bus**);
   static void assign(std::initializer_list<Bus*>, std::initializer_list<Bus**>,
 		     std::initializer_list<Bus*>, std::initializer_list<Bus**>);
   static void initval();
@@ -81,6 +82,8 @@ public:
   // FIXME: Do we need these?
   map<Name, Bus*> ins_map;
   map<Name, Bus*> outs_map;
+  void add_in(Bus*);
+  void add_out(Bus*);
   Bus* get_in(int);
   Bus* get_in(Name);
   Bus* get_out(int);

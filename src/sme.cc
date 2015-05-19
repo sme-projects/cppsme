@@ -33,6 +33,20 @@ SyncProcess::SyncProcess(const std::string name,
 
 SyncProcess::~SyncProcess() {}
 
+void SyncProcess::add_in(Bus* b) {
+  ins.push_back(b);
+  if (b->is_named()) {
+    ins_map.insert({b->get_name(), b});
+  }
+}
+
+void SyncProcess::add_out(Bus* b) {
+  outs.push_back(b);
+  if (b->is_named()) {
+    outs_map.insert({b->get_name(), b});
+  }
+}
+
 Bus* SyncProcess::get_in(int k) {
   return ins[k];
 }
@@ -69,8 +83,7 @@ Bus::Bus() {}
 Bus::Bus(Name name)
   :name{static_cast<Name>(name)}, named{true} {}
 
-void Bus::step() {
-  _out = _in;
+void Bus::step() {  _out = _in;
   _in = 0;
   // For now, just clear the value of bus to be written to in
   // next iteration in order to preserve network invariants
@@ -120,6 +133,16 @@ void Bus::assign(Busses from, BussesPtrPtr to) {
     (*fromit)->assign_to(*toit);
     fromit++;
     toit++;
+  }
+}
+
+void Bus::raw_assign(std::vector<Bus*> from,  Bus** to) {
+  auto fromit = from.begin();
+  auto fromit_end = from.end();
+  while (fromit != fromit_end) {
+    (*fromit)->assign_to(to);
+    fromit++;
+    to++;
   }
 }
 
