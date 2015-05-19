@@ -1,4 +1,4 @@
-noinst_PROGRAMS = adder ring sleeping_ring ring_dynamic
+noinst_PROGRAMS = adder ring sleeping_ring ring_dynamic validate
 EXTRA_DISt = ring.py
 CLEANFILES = ring.cc
 
@@ -33,6 +33,10 @@ ring_dynamic_LDADD = ../src/libsme.la
 ring_dynamic_LDFLAGS = -static
 ring_dynamic_SOURCES = ring_dynamic.cc
 
+validate_CPPFLAGS = -I../src -fno-var-tracking
+validate_LDADD = ../src/libsme.la
+validate_LDFLAGS = -static
+validate_SOURCES = validate.cc
 
 ring.cc: ring.py
 	$(PYTHON) $< > $@
