@@ -41,7 +41,7 @@ private:
   static int offsetb;
 
   int _in = 0;
-  int _out = 1;
+  int _out = 0;
   Name name;
   bool named = false;
 
