@@ -1,5 +1,4 @@
 AC_INIT([cppsme], [0.0.1])
-AC_CONFIG_SRCDIR([src/api_test.cc])
 AM_INIT_AUTOMAKE
 
 
