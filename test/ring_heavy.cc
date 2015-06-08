@@ -48,11 +48,11 @@ Node(const std::string name, Busses inputs, Busses outputs)
 }
 protected:
 void step() {
-  //n = 533.63556434;
+  n = 533.63556434;
   //n = 53363556434;
-  //for (i = 0; i < 10000; i++) {
-  //n = n/3;
-  //}
+  for (i = 0; i < 10000; i++) {
+    n = n/3;
+  }
   int val = in->read();
   //if (val > 0) {
   out->write(++val);
@@ -63,9 +63,9 @@ private:
   Bus* in;
   Bus* out;
 
-  //  long double n;
+  long double n;
   //unsigned long n;
-  //  int i;
+  int i;
 };
 
 int main() {

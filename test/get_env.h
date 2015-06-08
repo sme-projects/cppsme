@@ -23,9 +23,11 @@ inline bool test_bqueue(int flags) {
   if(flags_s != nullptr) {						\
   flags = std::stoi(flags_s);						\
   test_bqueue = ((flags >> 1) & 1) > 0;                                 \
-  test_cqueue = ((flags >> 2) & 1) > 0;}                                \
-  std::cout << "Building network with " << nodes << " processes and running for " << iterations << " iterations\n";\
-  if(test_cqueue) std::cout << "Testing using CQueue\n";		\
-  if(test_bqueue) std::cout << "Testing using BQueue\n";
+  test_cqueue = ((flags >> 2) & 1) > 0;}                                
+
+
+  //std::cout << "Building network with " << nodes << " processes and running for " << iterations << " iterations\n";
+  //if(test_cqueue) std::cout << "Testing using CQueue\n"; 
+  //if(test_bqueue) std::cout << "Testing using BQueue\n";
 
 #endif

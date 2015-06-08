@@ -48,11 +48,11 @@ Node(const std::string name, Busses inputs, Busses outputs)
 }
 protected:
 void step() {
-  //n = 533.63556434;
+  n = 533.63556434;
   //n = 53363556434;
-  //for (i = 0; i < 10000; i++) {
-  //n = n/3;
-  //}
+  for (i = 0; i < 10000; i++) {
+    n = n/3;
+  }
   int val = in->read();
   //if (val > 0) {
   out->write(++val);
@@ -63,10 +63,40 @@ private:
   Bus* in;
   Bus* out;
 
-  //  long double n;
+  long double n;
   //unsigned long n;
-  //  int i;
+  int i;
 };
+
+class LightNode: public SyncProcess {
+public:
+LightNode(const std::string name, Busses inputs, Busses outputs)
+   :SyncProcess(name, inputs, outputs) {
+      Bus::assign(inputs, {&in});
+      Bus::assign(outputs, {&out});
+}
+protected:
+void step() {
+  n = 533.63556434;
+  //n = 53363556434;
+  for (i = 0; i < 2500; i++) {
+    n = n/3;
+  }
+  int val = in->read();
+  //if (val > 0) {
+  out->write(++val);
+  //}
+}
+
+private:
+  Bus* in;
+  Bus* out;
+
+  long double n;
+  //unsigned long n;
+  int i;
+};
+
 
 int main() {
 
@@ -79,9 +109,14 @@ int main() {
   Bus* bus = new Bus[nodes];
   auto r = ThreadedRun(iterations, 0);
   r.add_proc(new GenNode("gennode", {&bus[nodes-1]}, {&bus[0]}, 1));
-  for(int i = 0; i < nodes - 1; i++) {
+  int i;
+  for(i = 0; i < nodes/2; i++) {
     r.add_proc(new Node("node", {&bus[i]}, {&bus[i+1]}));
   }
+  for(; i < nodes - 1; i++) {
+    r.add_proc(new LightNode("node", {&bus[i]}, {&bus[i+1]}));
+  }
+
   if(test_cqueue)
     r.start<CQueue>();
   if(test_bqueue)

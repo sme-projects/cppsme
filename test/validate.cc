@@ -60,7 +60,7 @@ int main() {
 
   Bus* bus = new Bus[nodes];
   Bus single = Bus();
-  auto r = Runner(iterations);
+  auto r = ThreadedRun(iterations, 0);
   auto p = new Validator("vaidator", {}, {&single});
   for (int i = 0; i < nodes; i++) {
     p->add_in(&bus[i]);
@@ -71,10 +71,10 @@ int main() {
     r.add_proc(new PlusOne("plusone", {&single}, {&bus[i]}));
   }
 
-  r.start();
-  /*if(test_cqueue)
+  //r.start();
+  if(test_cqueue)
     r.start<CQueue>();
   if(test_bqueue)
-  r.start<BQueue>();*/
+    r.start<BQueue>();
 
 }

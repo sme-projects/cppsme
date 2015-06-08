@@ -30,7 +30,7 @@ ThreadedRun::ThreadedRun(int steps, int threads)
       char* sme_threads_env = std::getenv("SME_THREADS");
       if (sme_threads_env != nullptr) {
 	this->threads = std::stoi(sme_threads_env, 0, 10);
-	std::cout << "Running " << this->threads << " thread(s) as specified by environment variable\n";
+	//std::cout << "Running " << this->threads << " thread(s) as specified by environment variable\n";
       } else {
 	this->threads = std::thread::hardware_concurrency();
 	if (this->threads == 0) {
@@ -74,6 +74,7 @@ void ThreadedRun::start() {
     std::cout << "Less network processes than threads. Limiting number of threads to "\
 	      << threads << std::endl;
   }
+  int nprocs = procs.size();
   auto q = T(threads, steps);
   q.populate(procs, busses);
 
@@ -90,7 +91,8 @@ void ThreadedRun::start() {
   }
   auto end = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> diff = end-start;
-  std::cout << __PRETTY_FUNCTION__ <<  " executed network in " << diff.count() << "s\n";
+  //std::cout << __PRETTY_FUNCTION__ <<  " executed network in " << diff.count() << "s\n";
+  std::cout << __PRETTY_FUNCTION__ << " " << threads << " " << steps << " " << nprocs << " " << diff.count() << "\n";
   delete[] t;
 }
 
