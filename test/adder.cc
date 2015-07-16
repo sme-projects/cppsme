@@ -66,7 +66,7 @@ private:
 };
 
 
-void adder() {
+int main() {
   auto in1 = Bus();
   auto in2 = Bus();
   auto res = Bus();
@@ -77,4 +77,6 @@ void adder() {
 	new Add("add", {&in1, &in2}, {&res}),
 	new Show("print", {&res}, {})});
   r.start<CQueue>();
+
+  return 0;
 }
