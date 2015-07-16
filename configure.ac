@@ -1,6 +1,5 @@
-AC_INIT([cppsme], [0.0.1])
+AC_INIT([libsme], [0.0.1])
 AM_INIT_AUTOMAKE
-
 
 AC_CONFIG_MACRO_DIRS([m4])
 
@@ -14,15 +13,13 @@ AX_CHECK_COMPILE_FLAG([-pedantic], [CXXFLAGS="$CXXFLAGS -pedantic"], [], [])
 AX_CHECK_COMPILE_FLAG([-pthread], [CXXFLAGS="$CXXFLAGS -pthread"], [], [])
 
 AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
+
 LT_INIT
 
 AX_WITH_CURSES
 AM_PATH_PYTHON([3.4])
 
-#INTI_REQUIRED_VERSION=1.0.7
-#PKG_CHECK_MODULES(INTI, inti-1.0 >= $INTI_REQUIRED_VERSION)
-AC_SUBST(INTI_CFLAGS)
-AC_SUBST(INTI_LIBS)
+AX_CREATE_PKGCONFIG_INFO([src/libsme.pc],,[-lsme])
 
 AC_CONFIG_FILES([Makefile src/Makefile test/Makefile])
 AC_OUTPUT
