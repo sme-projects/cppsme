@@ -1,5 +1,9 @@
-noinst_PROGRAMS = adder ring sleeping_ring ring_dynamic validate ring_heavy ring_uneven
-EXTRA_DISt = ring.py
+#noinst_PROGRAMS = adder ring sleeping_ring ring_dynamic validate ring_heavy ring_uneven
+EXTRA_PROGRAMS = adder ring sleeping_ring ring_dynamic validate ring_heavy ring_uneven
+
+test: $(EXTRA_PROGRAMS)
+
+EXTRA_DIST = ring.py get_env.h
 CLEANFILES = ring.cc
 
 static_gcc = -static-libstdc++ -static-libgcc
