@@ -50,14 +50,14 @@ void Runner::start() {
   int i;
   auto start = std::chrono::high_resolution_clock::now();
   for(i = 0; i < steps; i++){
+    for (SyncProcess* e:this->procs) {
+      e->step();
+    }
     // TODO: Decide on bus handling implementation
     for (Bus* b: busses){
       b->step();
     }
     //Bus::swapval();
-    for (SyncProcess* e:this->procs) {
-      e->step();
-    }
   }
   auto end = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> diff = end-start;
