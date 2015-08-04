@@ -6,6 +6,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <cstring>
 
 //#include "threads.h"
 #include "sme.h"
@@ -149,6 +150,30 @@ void Bus::raw_assign(std::vector<Bus*> from,  Bus** to) {
 void Bus::assign(Busses from1, BussesPtrPtr to1, Busses from2, BussesPtrPtr to2) {
   Bus::assign(from1, to1);
   Bus::assign(from2, to2);
+}
+
+DelayedBus::DelayedBus(int steps) {
+  fifo_len = steps + 1;
+  value_fifo = new int[fifo_len];
+  std::memset(value_fifo, 0, sizeof(int)*fifo_len);
+}
+
+void DelayedBus::step() {
+  wr_pos = wr_pos + 1 % fifo_len;
+}
+
+int DelayedBus::read() {
+  int val = wr_pos + 1 % fifo_len;
+  std::cout << "Read: " << val << std::endl;
+  return value_fifo[val];
+}
+
+void DelayedBus::write(int v) {
+  value_fifo[wr_pos] = v;
+}
+
+DelayedBus::~DelayedBus() {
+  delete[] value_fifo;
 }
 
 //

@@ -25,6 +25,7 @@
 #define SME_IBUS_2(b, n) n = get_out(#b)
 #define SME_IBUS(...) GET_MACRO(__VA_ARGS__, SME_IBUS_2, SME_IBUS_1)(__VA_ARGS__)
 #define SME_MKBUS(n) auto n = Bus(#n)
+#define SME_MKDBUS(n, m) auto n = DelayedBus(m)
 #define SME_BDEC(n) Bus* n
 
 using std::vector;
@@ -50,9 +51,9 @@ private:
 public:
   Bus();
   Bus(Name);
-  void step();
-  int read();
-  void write(int v);
+  virtual void step();
+  virtual int read();
+  virtual void write(int v);
   Name get_name();
   bool is_named();
   static void assign(std::initializer_list<Bus*>, std::initializer_list<Bus**>);
@@ -62,6 +63,20 @@ public:
   static void initval();
   static void swapval();
 
+};
+
+class DelayedBus: public Bus {
+private:
+  int* value_fifo;
+  int fifo_len = 0;
+  int wr_pos = 0;
+
+public:
+  DelayedBus(int);
+  ~DelayedBus();
+  void step();
+  int read();
+  void write(int v);
 };
 
 typedef std::initializer_list<Bus*> Busses;
