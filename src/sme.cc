@@ -159,11 +159,11 @@ DelayedBus::DelayedBus(int steps) {
 }
 
 void DelayedBus::step() {
-  wr_pos = wr_pos + 1 % fifo_len;
+  wr_pos = (wr_pos + 1) % fifo_len;
 }
 
 int DelayedBus::read() {
-  int val = wr_pos + 1 % fifo_len;
+  int val = (wr_pos + 1) % fifo_len;
   std::cout << "Read: " << val << std::endl;
   return value_fifo[val];
 }
