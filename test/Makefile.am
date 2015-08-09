@@ -1,5 +1,5 @@
 #noinst_PROGRAMS = adder ring sleeping_ring ring_dynamic validate ring_heavy ring_uneven
-EXTRA_PROGRAMS = adder ring sleeping_ring ring_dynamic validate ring_heavy ring_uneven
+EXTRA_PROGRAMS = adder ring sleeping_ring ring_dynamic validate ring_heavy ring_uneven delayed_bus
 
 test: $(EXTRA_PROGRAMS)
 
@@ -53,6 +53,11 @@ ring_uneven_CPPFLAGS = -I../src -fno-var-tracking
 ring_uneven_LDADD = ../src/libsme.la
 ring_uneven_LDFLAGS = -static $(static_gcc)
 ring_uneven_SOURCES = ring_uneven.cc
+
+delayed_bus_CPPFLAGS = -I../src -fno-var-tracking
+delayed_bus_LDADD = ../src/libsme.la
+delayed_bus_LDFLAGS = -static $(static_gcc)
+delayed_bus_SOURCES = delayed_bus.cc
 
 ring.cc: ring.py
 	$(PYTHON) $< > $@
