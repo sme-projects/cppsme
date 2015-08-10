@@ -46,7 +46,7 @@ vector<SyncProcess*> Runner::get_proc() {
 }
 
 void Runner::start() {
-  std::cout << "oldver\n";
+  std::cout << "Executing using the sequential implementation\n";
   int i;
   auto start = std::chrono::high_resolution_clock::now();
   for(i = 0; i < steps; i++){
