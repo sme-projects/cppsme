@@ -80,7 +80,7 @@ private:
 
 protected:
   void step() {
-    if(--state->iterations > 0) {
+    if(--(*state->iterations) != 0 && !(*state->halted)) {
       for(int i = 0; i < state->threads; i++) {
 	state->thread_loc[i] = 0;
       }
@@ -103,7 +103,7 @@ protected:
     std::unique_lock<std::mutex> lk(state->count_mutex);
     state->cv.wait(lk, [this]{return !(state->iter_end < state->threads - 1);});
     state->iter_end.store(0);
-    if(--state->iterations > 0) {
+    if(--(*state->iterations) != 0 && !(*state->halted)) {
       for(int i = 0; i < state->threads; i++) {
 	state->thread_loc[i] = 0;
       }
@@ -114,9 +114,10 @@ protected:
 
 
 
-BQueue::BQueue(int threads, int iterations) {
+BQueue::BQueue(int threads, int* iterations, bool* halted) {
   this->threads = threads;
   state = new State();
+  state->halted = halted;
   state->iterations = iterations;
   state->threads = threads;
   state->thread_loc = new int[threads];

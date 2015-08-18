@@ -9,15 +9,21 @@ protected:
   int steps;
   std::vector<SyncProcess*> procs;
   std::set<Bus*> busses;
+  bool halted = false;
+  int cursteps;
 
 public:
   Runner(int steps);
   virtual void start();
+  void halt();
+  int stepcount();
+
   void add_proc(std::initializer_list<SyncObject*>);
   void add_proc(SyncObject*);
   void append_procs(SyncProcess*);
   void append_procs(vector<SyncComponent*>);
   std::vector<SyncProcess*> get_proc();
+
 };
 
 

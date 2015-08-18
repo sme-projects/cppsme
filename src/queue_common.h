@@ -9,7 +9,8 @@
 
 struct State {
   volatile std::atomic<int> loc = {0};
-  int iterations = 0;
+  int* iterations;
+  bool* halted;
   volatile std::atomic<int> iter_end = {0}; // Number of threads that are idling in current it
   int threads = 1;
   //int thread_loc[4] = {0,0,0,0};

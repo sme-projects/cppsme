@@ -20,6 +20,7 @@ class BQueue {
 private:
   int size;
   int threads;
+  bool* halted;
 
   SyncProcess** els;
   Bus** busses;
@@ -33,7 +34,7 @@ private:
 
   void stop();
 public:
-  BQueue(int threads, int iterations);
+  BQueue(int threads, int* iterations, bool* halted);
   ~BQueue();
   // TODO: Accept generic iterable container of parametric type T
   void populate(vector<SyncProcess*> els, std::set<Bus*> busses);

@@ -75,7 +75,8 @@ void ThreadedRun::start() {
 	      << threads << std::endl;
   }
   int nprocs = procs.size();
-  auto q = T(threads, steps);
+  cursteps = steps;
+  auto q = T(threads, &cursteps, &halted);
   q.populate(procs, busses);
 
   auto start = std::chrono::high_resolution_clock::now();

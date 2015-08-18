@@ -47,9 +47,9 @@ vector<SyncProcess*> Runner::get_proc() {
 
 void Runner::start() {
   std::cout << "Executing using the sequential implementation\n";
-  int i;
+  cursteps = steps;
   auto start = std::chrono::high_resolution_clock::now();
-  for(i = 0; i < steps; i++){
+  while (cursteps-- != 0 && !halted) {
     for (SyncProcess* e:this->procs) {
       e->step();
     }
@@ -65,4 +65,17 @@ void Runner::start() {
   for (SyncProcess* e: procs) {
     delete e;
   }
+}
+
+int Runner::stepcount() {
+  if(cursteps < -1)
+    return std::abs(--cursteps);
+  else {
+    return steps;
+  }
+}
+
+void Runner::halt() {
+  std::cout << "Halted!" << std::endl;
+  this->halted = true;
 }

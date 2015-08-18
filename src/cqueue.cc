@@ -112,7 +112,7 @@ protected:
     std::unique_lock<std::mutex> lk(state->count_mutex);
     state->cv.wait(lk, [this]{return !(state->iter_end < state->threads - 1);});
     state->iter_end.store(0);
-    if(--state->iterations > 0) {
+    if(--(*state->iterations) != 0 && !(*state->halted)) {
       state->loc.store(0);
     }
     state->cv2.notify_all();
@@ -129,15 +129,16 @@ private:
 
 protected:
   void step() {
-    if(--state->iterations > 0) {
+    if(--(*state->iterations) != 0 && !(*state->halted)) {
       state->loc.store(0);
     }
   }
 };
 
-CQueue::CQueue(int threads, int iterations) {
+CQueue::CQueue(int threads, int* iterations, bool* halted) {
   this->threads = threads;
   state = new State();
+  state->halted = halted;
   state->iter_end.store(0);
   state->iterations = iterations;
   state->threads = threads;

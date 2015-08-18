@@ -36,7 +36,7 @@ private:
 
   int subscribed;
 public:
-  CQueue(int threads, int iterations);
+  CQueue(int threads, int* iterations, bool* halted);
   ~CQueue();
 
   // TODO: Accept generic iterable container of parametric type T

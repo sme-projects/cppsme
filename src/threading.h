@@ -15,6 +15,7 @@ public:
   ThreadedRun(int steps, int threads);
   template <class T>
   void start();
+
 private:
   template <class T>
   static void instance(T*, int);
