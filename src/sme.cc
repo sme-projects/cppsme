@@ -84,7 +84,8 @@ Bus::Bus() {}
 Bus::Bus(Name name)
   :name{static_cast<Name>(name)}, named{true} {}
 
-void Bus::step() {  _out = _in;
+void Bus::step() {
+  _out = _in;
   _in = 0;
   // For now, just clear the value of bus to be written to in
   // next iteration in order to preserve network invariants
@@ -164,7 +165,6 @@ void DelayedBus::step() {
 
 int DelayedBus::read() {
   int val = (wr_pos + 1) % fifo_len;
-  std::cout << "Read: " << val << std::endl;
   return value_fifo[val];
 }
 
